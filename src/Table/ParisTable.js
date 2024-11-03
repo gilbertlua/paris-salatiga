@@ -1,5 +1,5 @@
 import { FindTable } from "./FindTable";
-import { GetItems } from "../Query/DataQuery";
+import { DeleteData, GetItems } from "../Query/DataQuery";
 import { useEffect, useState } from "react";
 
 export const ParisTable = () => {
@@ -12,6 +12,17 @@ export const ParisTable = () => {
         }
         fetchData();
     }, []);
+
+    const  handleDelete = async (itemId) =>{
+        alert('yakin?')
+        try{
+            await DeleteData(itemId)
+            alert('delete successfully')
+        }
+        catch(error){
+            alert('gagal' + error)
+        }
+    }
 
     return (
         <div className="paris-table p-3 bg-dark rounded">
@@ -43,10 +54,11 @@ export const ParisTable = () => {
                             </td>
                             <td className="align-middle">
                                 {/* {item.updated_date?.toDate().toLocaleDateString()} */}
+                                {item.id}
                             </td>
                             <td className="text-center">
                                 <button className="paris-btn btn btn-light btn-sm">&nbsp; Edit &nbsp;</button>&nbsp;
-                                <button className="paris-btn btn btn-danger btn-sm">Delete</button>
+                                <button onClick={() => handleDelete(item.id)} className="paris-btn btn btn-danger btn-sm" >Delete</button>
                             </td>
                         </tr>
                     ))}

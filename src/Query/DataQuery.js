@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore"; 
+import { getFirestore, collection, getDocs, addDoc, deleteDoc } from "firebase/firestore"; 
+import { query, where } from "firebase/firestore";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDmZOH1o77pWmKSspm7rT4m_A4qyGXjb-Q",
@@ -14,6 +16,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+export async function BarcodeExists(barcode) {
+    const itemsRef = collection(db, "items");
+    const q = query(itemsRef, where("barcode", "==", barcode));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.length > 0; 
+}
+
+
 export async function GetItems() {
     const itemsRef = collection(db,"items")
     const snapshot = await getDocs(itemsRef)
@@ -26,6 +36,10 @@ export async function GetItems() {
 }
 
 export async function AddData(newItem){
+    const exists = await BarcodeExists(newItem.barcode);
+    if (exists) {
+        throw new Error("Barcode already exists.");
+    }
     const itemsRef = collection(db,"items")
     await addDoc(itemsRef, {
         merk: newItem.merk,
@@ -35,4 +49,8 @@ export async function AddData(newItem){
         name: newItem.name,
         barcode: newItem.barcode
     })
+}
+export async function DeleteData(itemId) {
+    const itemRef = collection(db, "items", itemId);
+    await deleteDoc(itemRef);
 }
